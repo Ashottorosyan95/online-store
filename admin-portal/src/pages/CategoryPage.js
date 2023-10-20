@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async'
 import moment from 'moment'
 import Iconify from '../components/iconify/Iconify'
 import CreateCategory from '../components/popups/category/CreateCategory'
-import { fetchAllCategoies } from '../app/features/category/categorySlice'
+import { categorySearch, fetchAllCategoies } from '../app/features/category/categorySlice'
 import Scrollbar from '../components/scrollbar/Scrollbar'
 import DeleteCategoryConfirmationPopup from '../components/popups/category/DeleteCategoryConfirmationPopup';
 
@@ -103,6 +103,17 @@ const CategoryPage = () => {
 
     const handleSearch = async (event) => {
         setSerachValue(event.target.value);
+        try {
+            const query = {
+                searchData: event.target.value,
+                page: page + 1,
+                limit
+            }
+            await dispatch(categorySearch(query))
+        } catch (error) {
+            console.error('Error fetching blog data:', error);
+        }
+        setPage(0);
     }
 
 

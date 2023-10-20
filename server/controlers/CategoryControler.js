@@ -126,7 +126,38 @@ class CategoryControler {
     }
 
     async searchCategory(req, res) {
+        const { searchData, page, limit } = req.query;
+        const searchQuery = {
+            $or: [
+                { name: { $regex: searchData, $options: 'i' } },
+            ]
+        };
+
+        const currentPage = parseInt(page);
+        const rowsPerPage = parseInt(limit);
+        const skip = (currentPage - 1) * rowsPerPage;
         
+        try {
+            const totalCategory = await Category.countDocuments(searchQuery);
+
+            const categories = await Category.find(searchQuery)
+                .skip(skip)
+                .limit(limit)
+                .exec();
+
+            if (categories.length) {
+                res.status(200).send({
+                    categories,
+                    totalCount: Math.ceil(totalCategory),
+                    currentPage: page,
+                });
+            } else {
+                res.status(200).send('Category not found!');
+            }
+        } catch (error) {
+            console.error('Error searching users:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
 }
 

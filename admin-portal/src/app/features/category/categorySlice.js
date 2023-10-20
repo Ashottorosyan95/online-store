@@ -58,11 +58,11 @@ export const deleteCategoryByid = createAsyncThunk("category/delete", async (que
 
 export const categorySearch = createAsyncThunk("category/search", async (query) => {
     try {
-        const response = await server.delete('/category-serach', {
+        const response = await server.get('/category-serach', {
             params: {
                 page: query.page || 1,
                 limit: query.limit,
-                query: query.searchData
+                searchData: query.searchData
             },
         });
         return response;
@@ -171,13 +171,14 @@ const categorySlice = createSlice({
         });
         builder.addCase(categorySearch.fulfilled, (state, action) => {
             state.isLoading = false;
-            console.log('action.', action.payload);
-            // if (action.payload?.status === 200) {
-            //     state.categoriesData = action.payload.data.categories;
-            //     state.isError = null;
-            // } else {
-            //     state.isError = true;
-            // }
+            if (action.payload?.status === 200) {
+                state.categories = action.payload.data.categories;
+                state.count = action.payload.data.totalCount;
+                state.curentPage = action.payload.data.curentPage;
+                state.isError = null;
+            } else {
+                state.isError = true;
+            }
         });
         builder.addCase(categorySearch.rejected, (state) => {
             state.isLoading = false;

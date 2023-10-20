@@ -9,10 +9,12 @@ const UserControler = require("../controlers/UserControler");
 const { checkIsAdmin } = require("../utils/authUtils");
 const BlogControler = require("../controlers/BlogControler");
 const CategoryControler = require("../controlers/CategoryControler");
+const productRouter = require("./product/productRouter");
 
 const upload = multer({
     storage: multer.memoryStorage(),
 });
+
 
 // user routes
 router.post('/signup', [
@@ -75,5 +77,8 @@ router.get('/get-categories', auth, checkIsAdmin, CategoryControler.getAllCatego
 router.delete('/delete-category/:categoryId', auth, checkIsAdmin, CategoryControler.deleteCategory);
 
 router.get('/category-serach', auth, checkIsAdmin, CategoryControler.searchCategory);
+
+// product routes
+router.use('/product', productRouter)
 
 module.exports = router;
