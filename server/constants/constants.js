@@ -4,4 +4,9 @@ const UserRoles = {
     MODERATOR: 'moderator',
 };
 
-module.exports = { UserRoles };
+const STATUS = {
+    NEW: 'new',
+    SALE: 'sale',
+};
+
+module.exports = { UserRoles, STATUS };

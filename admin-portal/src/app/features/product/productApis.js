@@ -10,3 +10,17 @@ export const createProduct = createAsyncThunk("product/create", async (formData)
         return err.response.data;
     }
 });
+
+export const fetchAllProducts = createAsyncThunk("product/getAll", async (query) => {
+    try {
+        const response = await server.get(`/product/list`, {
+            params: {
+                page: query.page || 1,
+                limit: query.limit
+            },
+        });
+        return response;
+    } catch (err) {
+        return err.response.data;
+    }
+});

@@ -99,38 +99,47 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
     };
 
     const handleSave = async () => {
-        // if (createdProduct.name  && createdProduct.categories && images.length) {
-        const formData = new FormData();
-        formData.append('name', createdProduct.name);
-        formData.append('price', createdProduct.price);
-        formData.append('salaryPrice', createdProduct.salaryprice);
-        formData.append('size', createdProduct.size);
-        formData.append('sku', createdProduct.sku);
-        formData.append('description', createdProduct.description);
-        formData.append('category', selectValue);
-        formData.append('page', page + 1);
-        formData.append('limit', limit);
-        images.forEach(image => formData.append('imgProductCollection', image));
-        await dispatch(createProduct(formData)).then((res) => {
-            console.log('res.payload', res.payload);
-            // if (res.payload.status === 201) {
-            //     setPage(0);
-            //     toast.success(res.payload.data.message, {
-            //         position: toast.POSITION.TOP_RIGHT,
-            //     });
-            //     setCreatedProduct({
-            //         name: '',
-            //         description: '',
-            //         categories: '',
-            //     });
-            //     setImages([])
-            //     onClose();
-            // } else {
-            //     toast.error(res.payload.message, {
-            //         position: toast.POSITION.TOP_RIGHT,
-            //     });
-            // }
-        })
+        // if (createdProduct.name
+        //     && selectValue
+        //     && images.length
+        //     && createProduct.price
+        //     && createProduct.size
+        //     && createProduct.sku
+        // ) {
+            const formData = new FormData();
+            formData.append('name', createdProduct.name);
+            formData.append('price', createdProduct.price);
+            formData.append('salaryPrice', createdProduct.salaryprice);
+            formData.append('size', createdProduct.size);
+            formData.append('sku', createdProduct.sku);
+            formData.append('description', createdProduct.description);
+            formData.append('category', selectValue);
+            formData.append('page', page + 1);
+            formData.append('limit', limit);
+            images.forEach(image => formData.append('imgProductCollection', image));
+            await dispatch(createProduct(formData)).then((res) => {
+                if (res.payload.status === 201) {
+                    setPage(0);
+                    toast.success(res.payload.data.message, {
+                        position: toast.POSITION.TOP_RIGHT,
+                    });
+                    setCreatedProduct({
+                        name: '',
+                        price: null,
+                        salaryprice: null,
+                        size: '',
+                        sku: '',
+                        description: '',
+                    });
+                    setImages([]);
+                    setSelectValue('')
+                    onClose();
+                } else {
+                    toast.error(res.payload.message, {
+                        position: toast.POSITION.TOP_RIGHT,
+                    });
+                }
+            })
         // }
     };
 
@@ -183,7 +192,7 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
                             label="Salary Price"
                             type='number'
                             fullWidth
-                            value={createdProduct?.salaryPrice}
+                            value={createdProduct?.salaryprice}
                             onChange={handleChange}
                         />
                     </Grid>

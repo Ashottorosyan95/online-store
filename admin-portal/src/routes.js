@@ -11,12 +11,11 @@ import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import ShowBlogPostsPage from './pages/ShowBlogPostsPage';
 import CategoryPage from './pages/CategoryPage';
+import ShowProductPage from './pages/ShowProductPage';
 
 const isAuthenticated = () => {
-  // Check if a token exists in session/local storage or any other authentication logic
-  const token = localStorage.access_token; // Example: assuming you store the token in local storage
-
-  return !!token; // Returns true if a token exists, false otherwise
+  const token = localStorage.access_token;
+  return !!token;
 };
 
 export default function Router() {
@@ -29,6 +28,7 @@ export default function Router() {
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
+        { path: 'product/:id', element: <ShowProductPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'blog/:id', element: <ShowBlogPostsPage /> },
         { path: 'category', element: <CategoryPage /> },

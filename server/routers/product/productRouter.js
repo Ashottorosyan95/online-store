@@ -11,4 +11,6 @@ const upload = multer({
 
 productRouter.post('/create', upload.array("imgProductCollection"), auth, checkIsAdmin, ProductControler.create);
 
+productRouter.get('/list', auth, ProductControler.getAllProducts);
+
 module.exports = productRouter;

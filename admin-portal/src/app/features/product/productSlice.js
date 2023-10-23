@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createProduct } from "./productApis";
+import { createProduct, fetchAllProducts } from "./productApis";
 
 
 
@@ -22,22 +22,35 @@ const productSlice = createSlice({
         });
         builder.addCase(createProduct.fulfilled, (state, action) => {
             state.isLoading = false;
-            // if (action.payload?.status === 201) {
-            //     state.categories = action.payload.data.categories;
-            //     state.count = action.payload.data.totalCount;
-            //     state.curentPage = action.payload.data.curentPage;
-            //     state.isError = null;
-            // } else if (action.payload?.status === 200) {
-            //     const catIndex = state.categories.findIndex((cat) => cat._id === action.payload.data.category._id);
-            //     if (catIndex !== -1) {
-            //         state.categories[catIndex] = action.payload.data.category;
-            //         state.isError = null;
-            //     }
-            // } else {
-            //     state.isError = true;
-            // }
+            if (action.payload?.status === 201) {
+                state.products = action.payload.data.products;
+                state.count = action.payload.data.totalCount;
+                state.curentPage = action.payload.data.curentPage;
+                state.isError = null;
+            } else {
+                state.isError = true;
+            }
         });
         builder.addCase(createProduct.rejected, (state) => {
+            state.isLoading = false;
+            state.isError = true;
+        });
+        // get all products
+        builder.addCase(fetchAllProducts.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(fetchAllProducts.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload?.status === 200) {
+                state.products = action.payload.data.products;
+                state.count = action.payload.data.totalCount;
+                state.curentPage = action.payload.data.curentPage;
+                state.isError = null;
+            } else {
+                state.isError = true;
+            }
+        });
+        builder.addCase(fetchAllProducts.rejected, (state) => {
             state.isLoading = false;
             state.isError = true;
         });

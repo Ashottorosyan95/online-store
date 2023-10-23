@@ -3,6 +3,7 @@ import usersReducer from './features/user/userSlice';
 import allUsersReducer from './features/user/allUsersSlice';
 import blokReducer from './features/blog/blogSlice';
 import categoryReducer from './features/category/categorySlice';
+import productReducer from './features/product/productSlice';
 
 
 export const store = configureStore({
@@ -10,7 +11,8 @@ export const store = configureStore({
         user: usersReducer,
         allUsers: allUsersReducer,
         blog: blokReducer,
-        category: categoryReducer
+        category: categoryReducer,
+        product: productReducer,
     },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
