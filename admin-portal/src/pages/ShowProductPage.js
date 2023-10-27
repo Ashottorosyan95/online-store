@@ -8,6 +8,7 @@ import Iconify from '../components/iconify/Iconify';
 import { fCurrency } from '../utils/formatNumber';
 import Label from '../components/label/Label';
 import CreateProductDialog from '../components/popups/product/CreateProductDialog';
+import DeleteProductConfirmation from '../components/popups/product/DeleteProductConfirmation';
 
 export default function ShowProductPage() {
   const dispatch = useDispatch();
@@ -57,13 +58,11 @@ export default function ShowProductPage() {
     product();
   }, [product]);
 
-  console.log('productData', productData);
-
   return (
     <Box sx={{
       display: 'grid',
-      gridTemplateColumns: '400px 1fr',
-      gridGap: '30px'
+      gridTemplateColumns: '600px 1fr',
+      gridGap: '50px'
     }}>
       <Grid sx={{ position: 'relative' }}>
         {productData?.status && (
@@ -87,6 +86,7 @@ export default function ShowProductPage() {
           showBullets='true'
           showFullscreenButton={false}
           showNav={false}
+          borderRadius={'10px'}
         />
       </Grid>
       <Box sx={{
@@ -94,7 +94,7 @@ export default function ShowProductPage() {
         justifyContent: 'space-between',
       }}>
         <Grid>
-          <Typography variant="h3" component="h2">
+          <Typography variant="h2" component="h2">
             {productData?.name}
           </Typography>
 
@@ -170,12 +170,12 @@ export default function ShowProductPage() {
           product={productData}
           isEdit={isEdit}
         />
-        {/* <DeleteConfirmationPopup
+        <DeleteProductConfirmation
           id={productData?._id}
-          open={openDeleteDialog}
-          onClose={() => setOpenDeleteDialog(false)}
+          open={deleteProductDialog}
+          onClose={() => setDeleteProductDialog(false)}
           message="Are you sure you want to continue?"
-        /> */}
+        />
       </Box>
     </Box>
   )

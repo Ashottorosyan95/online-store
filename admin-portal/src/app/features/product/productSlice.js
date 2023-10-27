@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
     createProduct,
+    deleteProduct,
     editProduct,
     fetchAllProducts,
     fetchListProducts,
@@ -148,6 +149,23 @@ const productSlice = createSlice({
             }
         });
         builder.addCase(fetchListProducts.rejected, (state) => {
+            state.isLoading = false;
+            state.isError = true;
+        });
+        // delete product
+        builder.addCase(deleteProduct.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(deleteProduct.fulfilled, (state, action) => {
+            state.isLoading = false;
+            // if (action.payload?.status === 200) {
+            //     state.products = action.payload.data.products;
+            //     state.isError = null;
+            // } else {
+            //     state.isError = true;
+            // }
+        });
+        builder.addCase(deleteProduct.rejected, (state) => {
             state.isLoading = false;
             state.isError = true;
         });

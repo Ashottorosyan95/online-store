@@ -293,6 +293,30 @@ class ProductControler {
         }
     }
 
+    async deleteProduct(req, res) {
+        const where = { _id: req.params.id };
+        try {
+            const deletedProduct = await Product.findByIdAndDelete(where);
+            if (deletedProduct.pictures.length) {
+                for (const item of deletedProduct.pictures) {
+                    await S3DeleteImg(item);
+                }
+            }
+
+            if (deletedProduct) {
+                res.json({
+                    message: 'Product deleted!',
+                });
+            } else {
+                res.status(404).json({ error: 'Product not found' });
+            }
+
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
 };
 
 module.exports = new ProductControler;

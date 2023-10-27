@@ -5,7 +5,6 @@ import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 // components
 import Iconify from '../components/iconify';
 // sections
@@ -43,10 +42,16 @@ export default function DashboardAppPage() {
   const { userCount } = useSelector((state) => state.allUsers);
   const { bloksCount } = useSelector((state) => state.blog);
   const { products } = useSelector((state) => state.product);
+  const { userInfo } = useSelector((state) => state.user);
 
+  // chart bar
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;
   const productsData = products.filter(item => new Date(item.createdAt).getMonth() + 1 === currentMonth);
+
+  // chart pie
+  const userValue = userCount.filter(item => item.role === 'user');
+  const moderator = userCount.filter(item => item.role === 'moderator');
 
   const allUsers = useCallback(async () => {
     try {
@@ -56,7 +61,7 @@ export default function DashboardAppPage() {
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     allUsers();
@@ -69,8 +74,8 @@ export default function DashboardAppPage() {
       </Helmet>
 
       <Container maxWidth="xl">
-        <Typography variant="h4" sx={{ mb: 5 }}>
-          Hi, Welcome back
+        <Typography variant="h4" sx={{ mb: 5, textTransform: 'capitalize' }}>
+          Hi, Welcome <span style={{color: '#1890ff'}}>{userInfo?.username}</span>
         </Typography>
 
         <Grid container spacing={3}>
@@ -94,18 +99,14 @@ export default function DashboardAppPage() {
 
           <Grid item xs={12} md={6} lg={4}>
             <AppCurrentVisits
-              title="Current Visits"
+              title="Current Users"
               chartData={[
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
+                { label: 'Users', value: userValue.length },
+                { label: 'Moderators', value: moderator.length },
               ]}
               chartColors={[
                 theme.palette.primary.main,
                 theme.palette.info.main,
-                theme.palette.warning.main,
-                theme.palette.error.main,
               ]}
             />
           </Grid>

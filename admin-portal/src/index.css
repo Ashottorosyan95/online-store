@@ -6,6 +6,19 @@
     padding-top: unset !important;
 }
 
-/* .image-gallery {
-    max-width: 400px;
-} */
+.image-gallery-image{
+    border-radius: 12px;
+}
+
+.image-gallery-thumbnail.active {
+    border-radius: 13px;
+}
+
+.image-gallery-thumbnail:hover {
+    cursor: pointer;
+    border-radius: 13px;
+}
+
+.image-gallery-thumbnail-image {
+    border-radius: 10px;
+}

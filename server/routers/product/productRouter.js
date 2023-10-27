@@ -25,4 +25,6 @@ productRouter.get('/sort', auth, ProductControler.filterProduct);
 
 productRouter.put('/edit/:id', upload.array("imgEditCollection"), auth, checkIsAdmin, ProductControler.editProduct);
 
+productRouter.delete('/delete/:id', auth, checkIsAdmin, ProductControler.deleteProduct);
+
 module.exports = productRouter;

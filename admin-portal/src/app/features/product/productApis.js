@@ -90,3 +90,12 @@ export const editProduct = createAsyncThunk("product/edit", async (query) => {
         return err.response.data;
     }
 });
+
+export const deleteProduct = createAsyncThunk("product/delete", async (query) => {
+    try {
+        const response = await server.delete(`product/delete/${query.productId}`);
+        return response;
+    } catch (err) {
+        return err.response.data;
+    }
+});

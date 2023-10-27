@@ -12,6 +12,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import ShowBlogPostsPage from './pages/ShowBlogPostsPage';
 import CategoryPage from './pages/CategoryPage';
 import ShowProductPage from './pages/ShowProductPage';
+import ProfilePage from './pages/ProfilePage';
 
 const isAuthenticated = () => {
   const token = localStorage.access_token;
@@ -32,6 +33,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'blog/:id', element: <ShowBlogPostsPage /> },
         { path: 'category', element: <CategoryPage /> },
+        { path: 'profile', element: <ProfilePage /> },
       ],
     },
     {

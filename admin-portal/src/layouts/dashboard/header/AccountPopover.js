@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -13,14 +13,17 @@ const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: 'eva:home-fill',
+    path: '/dashboard/app',
   },
   {
     label: 'Profile',
     icon: 'eva:person-fill',
+    path: '/dashboard/profile',
   },
   {
     label: 'Settings',
     icon: 'eva:settings-2-fill',
+    path: '/dashboard/profile',
   },
 ];
 
@@ -38,6 +41,11 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+
+  const handleClick = (item) => {
+    navigate(item.path);
+    setOpen(null);
+  }
 
   const handleLogout = async () => {
     await dispatch(logout()).then((res) => {
@@ -105,7 +113,7 @@ export default function AccountPopover() {
 
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
+            <MenuItem key={option.label} onClick={() => handleClick(option)}>
               {option.label}
             </MenuItem>
           ))}

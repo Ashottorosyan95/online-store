@@ -35,6 +35,10 @@ const Main = styled('div')(({ theme }) => ({
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
 
+  const handleClick = () => {
+    
+  }
+
   return (
     <StyledRoot>
       <Header onOpenNav={() => setOpen(true)} />
