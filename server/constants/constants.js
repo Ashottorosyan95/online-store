@@ -9,4 +9,10 @@ const STATUS = {
     SALE: 'sale',
 };
 
-module.exports = { UserRoles, STATUS };
+const ProductFilter = {
+    NEWEST: 'newest',
+    PRICEHIGHLOW: 'priceHighLow',
+    PRICELOWHIGH: 'priceLowHigh',
+}
+
+module.exports = { UserRoles, STATUS, ProductFilter };

@@ -195,7 +195,6 @@ const blogSlice = createSlice({
         });
         builder.addCase(editBlog.fulfilled, (state, action) => {
             state.isLoading = false;
-            console.log('action.payload', action.payload);
             if (action.payload?.status === 200) {
                 state.blogData = action.payload.data.blog;
                 state.isError = null;

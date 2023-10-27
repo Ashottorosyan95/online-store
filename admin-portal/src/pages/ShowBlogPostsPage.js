@@ -37,7 +37,7 @@ const ShowBlogPostsPage = () => {
       }
       await dispatch(getBlogById(query))
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('Error fetching blog data:', error);
     }
   }, [dispatch]);
 

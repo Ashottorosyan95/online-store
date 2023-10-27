@@ -24,6 +24,7 @@ export default function ShopProductCard({ product }) {
   const navigate = useNavigate();
   const {
     _id,
+    SKU,
     name,
     price,
     status,
@@ -97,6 +98,10 @@ export default function ShopProductCard({ product }) {
             {name}
           </Typography>
         </Link>
+
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography fontSize={12}>SKU</Typography>:&nbsp;<Typography color={'#2196f3'}>{SKU}</Typography>
+        </Box>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="subtitle1">

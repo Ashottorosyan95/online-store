@@ -22,13 +22,13 @@ const StyledSearch = styled(OutlinedInput)(({ theme }) => ({
   },
 }));
 
-export default function BlogPostsSearch({ count, filterName, onFilterName, }) {
+export default function ProductSearch({ count, searchName, onSearchName, }) {
   return (
     <StyledSearch
       disabled={count === 0}
-      value={filterName}
-      onChange={onFilterName}
-      placeholder="Search blog..."
+      value={searchName}
+      onChange={onSearchName}
+      placeholder="Search product..."
       startAdornment={
         <InputAdornment position="start">
           <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />

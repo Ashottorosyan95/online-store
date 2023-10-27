@@ -50,9 +50,9 @@ class UserControler {
     }
 
     async allAdminDashboardUsers(req, res) {
-        const totalUsers = await User.countDocuments({ role: { $ne: 'admin' } });
+        const totalUsers = await User.find({ role: { $ne: 'admin' } });
         res.json({
-            usersCount: Math.ceil(totalUsers),
+            totalUsers
         });
     }
 

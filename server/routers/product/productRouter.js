@@ -13,4 +13,16 @@ productRouter.post('/create', upload.array("imgProductCollection"), auth, checkI
 
 productRouter.get('/list', auth, ProductControler.getAllProducts);
 
+productRouter.get('/all', auth, checkIsAdmin, ProductControler.getProducts);
+
+productRouter.post('/sku', auth, checkIsAdmin, ProductControler.getProductSku);
+
+productRouter.get('/one/:id', auth, ProductControler.getProductById);
+
+productRouter.get('/serach', auth, ProductControler.searchProduct);
+
+productRouter.get('/sort', auth, ProductControler.filterProduct);
+
+productRouter.put('/edit/:id', upload.array("imgEditCollection"), auth, checkIsAdmin, ProductControler.editProduct);
+
 module.exports = productRouter;

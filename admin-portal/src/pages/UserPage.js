@@ -184,8 +184,6 @@ export default function UserPage() {
     allUserData();
   }, [allUserData]);
 
-  console.log('selected', selected);
-
   return (
     <>
       <Helmet>

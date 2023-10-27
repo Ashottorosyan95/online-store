@@ -9,20 +9,40 @@ import {
     InputLabel,
     MenuItem,
     Select,
-    TextField
+    TextField,
+    TextareaAutosize
 } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import { red } from '@mui/material/colors';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { createProduct } from '../../../app/features/product/productApis';
+import { createProduct, editProduct, skuValidate } from '../../../app/features/product/productApis';
 
-const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }) => {
+CreateProductDialog.propTypes = {
+    page: PropTypes.number,
+    limit: PropTypes.number,
+    onClose: PropTypes.func,
+    setPage: PropTypes.func,
+    categories: PropTypes.object
+};
+
+export default function CreateProductDialog({
+    open,
+    onClose,
+    page,
+    limit,
+    setPage,
+    categories,
+    product,
+    isEdit
+}) {
     const dispatch = useDispatch();
     const [images, setImages] = useState([]);
     const ref = useRef();
     const [selectValue, setSelectValue] = useState('');
+    const [validateSkuMessage, setValidateSkuMessage] = useState(null);
     const [createdProduct, setCreatedProduct] = useState({
         name: '',
         price: null,
@@ -43,6 +63,7 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
     });
 
     const primary = red[500];
+    const regexPattern = /^[A-Z]{2}-[0-9]{4}$/;
 
     const handleCloseClick = () => {
         onClose();
@@ -75,22 +96,29 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
         }
     };
 
-    const handleChange = (e) => {
-        const regexPattern = /^[A-Z]{2}\d{2}[A-Z]$/;
+    const handleChange = async (e) => {
         const { name, value } = e.target;
         setCreatedProduct({ ...createdProduct, [name]: value });
         setErrors({
             ...errors,
             name: !createdProduct.name ? "Name is required." : createdProduct.name.length < 3 ? "Name min length 3." : "",
             price: !createdProduct.price ? "Price is required." : "",
-            sku: !createdProduct.sku ? "SKUis required." : !regexPattern.test(createdProduct.sku) ? "Please enter a valid format (e.g SA24FR)." : "",
+            sku: !isEdit ? !createdProduct.sku ? "SKUis required." : !regexPattern.test(createdProduct.sku) ? "Please enter a valid format (e.g AS-12345)." : validateSkuMessage : null,
             categories: !createdProduct.categories ? "Category is required." : "",
             pictures: images.length < 1 ? "Image is required." : "",
         });
+    };
+
+    const deleteImageClick = (img, index) => {
+        if (typeof img === 'string') {
+            const filteredArray = images.filter(item => item !== img);
+            setImages(filteredArray);
+        } else {
+            setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        }
     }
 
     const handleSelectChange = (e) => {
-        console.log('e.target.value', e.target.value);
         setSelectValue(e.target.value)
     }
 
@@ -99,21 +127,15 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
     };
 
     const handleSave = async () => {
-        // if (createdProduct.name
-        //     && selectValue
-        //     && images.length
-        //     && createProduct.price
-        //     && createProduct.size
-        //     && createProduct.sku
-        // ) {
-            const formData = new FormData();
-            formData.append('name', createdProduct.name);
-            formData.append('price', createdProduct.price);
-            formData.append('salaryPrice', createdProduct.salaryprice);
-            formData.append('size', createdProduct.size);
-            formData.append('sku', createdProduct.sku);
-            formData.append('description', createdProduct.description);
-            formData.append('category', selectValue);
+        const formData = new FormData();
+        formData.append('name', createdProduct.name);
+        formData.append('price', createdProduct.price);
+        formData.append('salaryPrice', createdProduct.salaryprice);
+        formData.append('size', createdProduct.size);
+        formData.append('sku', createdProduct.sku);
+        formData.append('description', createdProduct.description);
+        formData.append('category', selectValue);
+        if (!isEdit) {
             formData.append('page', page + 1);
             formData.append('limit', limit);
             images.forEach(image => formData.append('imgProductCollection', image));
@@ -140,12 +162,52 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
                     });
                 }
             })
-        // }
+        } else {
+            images.forEach(image => formData.append('imgEditCollection', image));
+            const query = {
+                productId: product._id,
+                data: formData
+            }
+            await dispatch(editProduct(query)).then((res) => {
+                if (res.payload.status === 200) {
+                    onClose();
+                }
+            })
+        }
     };
+
+    const validateSku = useCallback(async () => {
+        if (createdProduct.sku && regexPattern.test(createdProduct.sku)) {
+            await dispatch(skuValidate(createdProduct.sku)).then(res => {
+                if (res.payload.status === 200 && res.payload.data !== 'Ok') {
+                    setValidateSkuMessage(res.payload.data)
+                }
+            });
+        }
+    }, [dispatch, createdProduct, regexPattern])
+
+    useEffect(() => {
+        validateSku()
+    }, [validateSku]);
+
+    useEffect(() => {
+        if (isEdit) {
+            setImages(product?.pictures);
+            setSelectValue(categories.filter(e => e._id === product.categoryId)[0]._id)
+            setCreatedProduct({
+                name: product.name,
+                price: product.price,
+                salaryprice: product.salaryPrice,
+                size: product.size,
+                sku: product.SKU,
+                description: product.description,
+            });
+        }
+    }, [isEdit, product, categories]);
 
     return (
         <Dialog open={open}>
-            <DialogTitle>Create Product</DialogTitle>
+            <DialogTitle>{!isEdit ? 'Create Product' : `Edit product ${product?.name}`}</DialogTitle>
             <DialogContent className='grid' style={{ paddingTop: '12px' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -233,6 +295,7 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
                             fullWidth
                             value={createdProduct?.sku}
                             onChange={handleChange}
+                            disabled={isEdit}
                         />
                         {errors.sku ? <Box component="span"
                             sx={{
@@ -253,7 +316,7 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
                                 fullWidth
                                 value={selectValue}
                                 onChange={handleSelectChange}
-                                disabled={!categories.length}
+                                disabled={!categories?.length}
                                 label="Categories"
                             >
                                 <MenuItem value="">
@@ -302,8 +365,24 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
                         </Box> : null}
                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
                             {images?.map((image, index) => (
-                                <Grid item xs={12} key={index} sx={{ marginTop: '10px' }} >
-                                    <img src={URL.createObjectURL(image)} alt={`Uploaded ${index}`} style={{ width: '80px', height: '80px' }} />
+                                <Grid item xs={12} key={index} sx={{ marginTop: '10px', position: 'relative' }} >
+                                    <img
+                                        alt={`Uploaded ${index}`}
+                                        style={{ width: '80px', height: '80px' }}
+                                        src={typeof image === 'string' ? `${process.env.REACT_APP_AMAZON_S3_URL}/${image}` : URL.createObjectURL(image)}
+                                    />
+                                    {images.length > 1 ?
+                                        <Box
+                                            onClick={() => deleteImageClick(image, index)}
+                                            style={{
+                                                color: 'red',
+                                                cursor: 'pointer',
+                                                position: 'absolute',
+                                                top: '-4px',
+                                                right: '32px'
+                                            }}
+                                        >X</Box> : null
+                                    }
                                 </Grid>
                             ))}
                         </Box>
@@ -322,6 +401,4 @@ const CreateProductDialog = ({ open, onClose, page, limit, setPage, categories }
             </DialogContent>
         </Dialog>
     )
-}
-
-export default CreateProductDialog;
+};

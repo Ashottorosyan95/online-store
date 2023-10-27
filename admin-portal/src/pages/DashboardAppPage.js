@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 // components
 import Iconify from '../components/iconify';
 // sections
@@ -21,17 +22,37 @@ import {
 } from '../sections/@dashboard/app';
 import { fetchAllUsersCount } from '../app/features/user/allUsersSlice';
 import { fetchAllBlogsCount } from '../app/features/blog/blogSlice';
+import { fetchListProducts } from '../app/features/product/productApis';
+
+function calculateSubheader(products) {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const lastMonthProducts = products.filter(product => {
+    const productDate = new Date(product.createdAt);
+    return productDate.getMonth() === currentMonth - 1 && productDate.getFullYear() === currentYear;
+  });
+  const lastMonthTotal = lastMonthProducts.reduce((total, product) => total + product.price, 0);
+
+  return lastMonthTotal ? `(${lastMonthTotal}) from last month` : null;
+}
 
 export default function DashboardAppPage() {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { userCount } = useSelector((state) => state.allUsers);
   const { bloksCount } = useSelector((state) => state.blog);
+  const { products } = useSelector((state) => state.product);
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const productsData = products.filter(item => new Date(item.createdAt).getMonth() + 1 === currentMonth);
 
   const allUsers = useCallback(async () => {
     try {
       await dispatch(fetchAllUsersCount())
       await dispatch(fetchAllBlogsCount())
+      await dispatch(fetchListProducts())
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -54,49 +75,20 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Users" total={userCount || 0} color="info" icon={'ant-design:user-filled'} />
+            <AppWidgetSummary title="Users" total={userCount?.length || 0} color="info" icon={'ant-design:user-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Blogs" total={bloksCount || 0} color="warning" icon={'ant-design:order-filled'} />
+            <AppWidgetSummary title="Blogs" total={bloksCount || 0} color="info" icon={'ant-design:order-filled'} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <AppWidgetSummary title="Products" total={products?.length || 0} color="info" icon={'ant-design:order-filled'} />
           </Grid>
           <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ]}
+              title="Products"
+              subheader={calculateSubheader(products)}
+              chartData={productsData}
             />
           </Grid>
 

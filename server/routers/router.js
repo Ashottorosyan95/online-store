@@ -55,9 +55,9 @@ router.post('/create-post', upload.array("imgCollection"), auth, checkIsAdmin, B
 
 router.get('/get-all-post', auth, BlogControler.allPosts);
 
-router.get('/post-serach', auth, checkIsAdmin, BlogControler.searchPost);
+router.get('/post-serach', auth, BlogControler.searchPost);
 
-router.get('/post/:id', auth, checkIsAdmin, BlogControler.getPostById);
+router.get('/post/:id', auth, BlogControler.getPostById);
 
 router.delete('/delete-blog/:blogId', auth, checkIsAdmin, BlogControler.deleteBlog);
 

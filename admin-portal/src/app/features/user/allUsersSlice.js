@@ -111,7 +111,7 @@ const allUsersSlice = createSlice({
         isLoading: false,
         curentPage: null,
         isError: null,
-        userCount: null
+        userCount: []
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -216,7 +216,7 @@ const allUsersSlice = createSlice({
         builder.addCase(fetchAllUsersCount.fulfilled, (state, action) => {
             state.isLoading = false;
             if (action.payload?.status === 200) {
-                state.userCount = action.payload.data.usersCount;
+                state.userCount = action.payload.data.totalUsers;
                 state.isError = null;
             } else {
                 state.isError = true;
